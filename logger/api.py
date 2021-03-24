@@ -1,11 +1,11 @@
-from .__init__ import _ltype, _lreg
+from .__init__ import _ltype
 from .err import _Logger_ERR_HDN, _Logger_ERR
 
 import re, os
 
 class Logger_UTILS:
 	def checkf(filename):
-		if re.match(_lreg['filename'],filename): return True
+		if filename.endswith('.log'): return True
 		else: return False
 
 	def remove(fname):
@@ -51,7 +51,7 @@ class Logger:
 		_Logger_ERR_HDN(filename,fxist=filename)
 		with open(filename, 'r') as f:
 			buff=f.readlines()
-			ctx = re.split(': +', buff[line].strip())
+			ctx = re.split(r'[?:*]\s*', buff[line].strip())
 			for c in _ltype:
 				if _ltype[c] == ctx[0]:
 					code = c

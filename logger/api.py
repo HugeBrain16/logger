@@ -19,16 +19,25 @@ class Logger_UTILS:
 class Logger:
 	def __init__(self,filename):
 		self.filename = filename
+
+	def __enter__(self):
+		return Logger(self.filename)
+
+	def __exit__(*argrs, **kwargs):
+		pass
 	
 	def print(self,code,text):
 		_Logger_ERR_HDN(self.filename,code,self.filename)
 		with open(self.filename, 'a+') as f:
 			f.write(f'{_ltype[code]}: {text}\r')
 	
-	def flush(self):
+	def flush(self,stream=False):
 		_Logger_ERR_HDN(self.filename,fxist=self.filename)
-		os.remove(self.filename)
-		with open(self.filename,'x') as f: pass
+		if not stream:
+			os.remove(self.filename)
+			with open(self.filename,'x') as f: pass
+		else:
+			open(self.filename,'w').write('')
 	
 	def create(self):
 		_Logger_ERR_HDN(self.filename,fexist=self.filename)
@@ -38,6 +47,7 @@ class Logger:
 		Logger_UTILS.remove(self.filename)
 	
 	def get(self,code):
+		"""get logs by code"""
 		_Logger_ERR_HDN(self.filename,fxist=self.filename)
 		ret = list()
 		with open(self.filename, 'r') as f:
@@ -48,10 +58,11 @@ class Logger:
 		if len(ret): return ret
 	
 	def _get(filename,line):
+		"""get logs by line"""
 		_Logger_ERR_HDN(filename,fxist=filename)
 		with open(filename, 'r') as f:
 			buff=f.readlines()
-			ctx = re.split(r'[?:*]\s*', buff[line].strip())
+			ctx = re.split(r'\s*\:\s*',buff[line].strip(),1)
 			for c in _ltype:
 				if _ltype[c] == ctx[0]:
 					code = c
